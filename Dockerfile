@@ -31,6 +31,6 @@ COPY . .
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD python -c "import os; assert os.path.exists('face_landmark_68_model.dat')"
+    CMD python -c "import os; assert os.path.exists('shape_landmark_68_model.dat')"
 
 CMD ["python", "app.py"]
