@@ -5,7 +5,7 @@ from flask import Flask, request, jsonify
 
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+
 
 # Initialize dlib models
 try:
