@@ -1,37 +1,50 @@
 import os
 import dlib
-from flask import Flask
+import numpy as np
+from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-MODEL_FILE = "shape_predictor_68_face_landmarks.dat"
+# Initialize dlib models
+detector = dlib.get_frontal_face_detector()
+predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
-def verify_model():
-    """Verify the model file exists and is valid"""
-    if not os.path.exists(MODEL_FILE):
-        raise FileNotFoundError(f"Model file missing at {os.path.abspath(MODEL_FILE)}")
+@app.route('/detect_smile', methods=['POST'])
+def detect_smile():
+    if 'image' not in request.files:
+        return jsonify({"error": "No image provided"}), 400
     
-    file_size = os.path.getsize(MODEL_FILE)
-    if file_size < 95_000_000:  # Expected ~96MB
-        raise ValueError(f"Model file too small ({file_size} bytes)")
-
-try:
-    verify_model()
-    detector = dlib.get_frontal_face_detector()
-    predictor = dlib.shape_predictor(MODEL_FILE)
-    print("✅ Model loaded successfully!")
-except Exception as e:
-    print(f"\n❌ Model loading failed: {str(e)}")
-    print("Debugging info:")
-    print(f"Current directory: {os.getcwd()}")
-    print(f"Files present: {os.listdir()}")
-    print(f"Model file size: {os.path.getsize(MODEL_FILE) if os.path.exists(MODEL_FILE) else 'MISSING'}")
-    raise
-
-@app.route('/')
-def home():
-    return "Face Detection Service is Running"
+    try:
+        # Read image
+        file = request.files['image']
+        img = dlib.load_rgb_image(file)
+        
+        # Detect faces
+        faces = detector(img)
+        if not faces:
+            return jsonify({"error": "No faces detected"}), 400
+        
+        # Get first face
+        face = faces[0]
+        landmarks = predictor(img, face)
+        
+        # Calculate smile percentage (simplified)
+        mouth_width = landmarks.part(54).x - landmarks.part(48).x
+        mouth_open = landmarks.part(66).y - landmarks.part(62).y
+        smile_percent = min(100, max(0, (mouth_open / mouth_width) * 300))
+        
+        return jsonify({
+            "smile_percentage": round(smile_percent, 2),
+            "face_location": {
+                "left": face.left(),
+                "top": face.top(),
+                "right": face.right(),
+                "bottom": face.bottom()
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
