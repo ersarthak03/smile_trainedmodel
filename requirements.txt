@@ -1,4 +1,5 @@
 flask==2.3.2
 opencv-python-headless==4.7.0.72
-dlib==19.24.0
+https://github.com/sachadee/Dlib-builds/releases/download/v19.24/dlib-19.24.0-cp311-cp311-linux_x86_64.whl
 numpy==1.24.3
+gunicorn==20.1.0
