@@ -1,0 +1,4 @@
+flask==2.3.2
+opencv-python-headless==4.7.0.72
+dlib==19.24.0
+numpy==1.24.3
