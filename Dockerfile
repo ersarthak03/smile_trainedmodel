@@ -1,6 +1,6 @@
 FROM python:3.9-slim
 
-# Install system dependencies for dlib
+# Install system dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     cmake \
@@ -11,23 +11,16 @@ RUN apt-get update && \
 
 WORKDIR /app
 
-# Download and verify dlib model
+# Download model
 RUN wget http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2 && \
-    bzip2 -d shape_predictor_68_face_landmarks.dat.bz2 && \
-    chmod a+r shape_predictor_68_face_landmarks.dat && \
-    [ -s shape_predictor_68_face_landmarks.dat ] || (echo "Model file invalid" && exit 1)
+    bzip2 -d shape_predictor_68_face_landmarks.dat.bz2
 
-# Install Python dependencies
+# Install Python packages
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt gunicorn==20.1.0
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application
+# Copy app
 COPY . .
 
-# Production server configuration
-CMD ["gunicorn", \
-    "--bind", "0.0.0.0:$PORT", \
-    "--workers", "2", \
-    "--threads", "2", \
-    "--timeout", "120", \
-    "app:app"]
+# Use shell form to access environment variables
+CMD gunicorn --bind 0.0.0.0:$PORT --workers 2 --threads 2 --timeout 120 app:app
