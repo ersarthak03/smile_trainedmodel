@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 # Initialize dlib models
 detector = dlib.get_frontal_face_detector()
-predictor = dlib.shape_predictor("face_landmark_68_model.dat")
+predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
 # Define mouth landmark indices
 MOUTH_POINTS = list(range(48, 68))
