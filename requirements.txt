@@ -1,5 +1,5 @@
 flask==2.3.2
 opencv-python-headless==4.7.0.72
-dlib==19.24.1 https://github.com/Murtaza-Saeed/Dlib-Precompiled-Wheels-for-Python-on-Windows-x64-Easy-Installation/blob/master/dlib-19.24.1-cp311-cp311-win_amd64.whl
+https://github.com/sachadee/dlib_compiled/blob/main/dlib-19.22.99-cp39-cp39-win_amd64.whl
 numpy==1.24.3
 dlib==19.24.1
