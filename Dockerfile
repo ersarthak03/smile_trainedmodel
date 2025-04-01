@@ -26,6 +26,6 @@ COPY . .
 # 5. Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
     CMD curl -f http://localhost:$PORT/ || exit 1
-
+EXPOSE $PORT
 # 6. Start command (shell form for Railway compatibility)
-CMD gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 2 --timeout 120 app:app
+CMD gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 2 --timeout 300 --access-logfile - app:app
